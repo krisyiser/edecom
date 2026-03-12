@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@theme {
+  --color-edecom-primary: #10416b; /* The dark blue in the image */
+  --color-edecom-secondary: #0087cb; /* Lighter blue */
+  --color-edecom-cyan: #1994c6;
+  --color-edecom-light: #46b7d5;
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #f0f2f5;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
