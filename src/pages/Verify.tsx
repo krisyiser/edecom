@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldAlert, ArrowLeft } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Verify() {
     const [code, setCode] = useState('');
+    const inputRef = useRef<HTMLInputElement>(null);
     const navigate = useNavigate();
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -15,49 +16,72 @@ export default function Verify() {
     };
 
     return (
-        <div className="flex flex-col min-h-screen bg-white">
-            <div className="pt-8 px-6">
-                <button onClick={() => navigate(-1)} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
-                    <ArrowLeft className="w-6 h-6 text-gray-700" />
+        <div className="flex flex-col min-h-[100dvh] bg-[#f5f5f7]">
+            <div className="flex items-center px-4 pt-10 pb-4">
+                <button onClick={() => navigate(-1)} className="flex items-center text-blue-500 font-medium active:opacity-50 transition-opacity">
+                    <ChevronLeft className="w-6 h-6 -ml-2" />
+                    Atrás
                 </button>
             </div>
 
-            <div className="flex-1 px-8 pt-6 pb-12 flex flex-col justify-center">
-                <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
-                    <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 text-blue-800 shadow-sm border border-blue-100">
-                        <ShieldAlert className="w-8 h-8" />
-                    </div>
-
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                        Verifica tu celular
+            <div className="flex-1 px-6 pt-2 flex flex-col">
+                <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.4 }}>
+                    <h1 className="text-3xl font-bold text-black mb-2 tracking-tight">
+                        Verifica tu cuenta
                     </h1>
-                    <p className="text-gray-500 mb-8 leading-relaxed text-sm">
-                        Hemos enviado un código SMS de 6 dígitos a tu número. Ingrésalo a continuación para continuar.
+                    <p className="text-gray-500 mb-10 text-[15px] leading-relaxed">
+                        Enviamos un código de 6 dígitos por SMS. Ingresa el código abajo.
                     </p>
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        <input
-                            type="text"
-                            inputMode="numeric"
-                            value={code}
-                            onChange={(e) => setCode(e.target.value.replace(/\D/g, '').substring(0, 6))}
-                            className="w-full text-center tracking-[0.5em] font-mono text-3xl py-4 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none text-gray-800 transition-all shadow-inner bg-gray-50"
-                            placeholder="000000"
-                            required
-                        />
+                    <form onSubmit={handleSubmit} className="relative flex flex-col h-full items-center">
+                        <div className="relative w-full max-w-[320px] mb-12" onClick={() => inputRef.current?.focus()}>
+                            {/* Hidden Input for Mobile Keyboard */}
+                            <input
+                                ref={inputRef}
+                                type="text"
+                                inputMode="numeric"
+                                autoComplete="one-time-code"
+                                value={code}
+                                onChange={(e) => setCode(e.target.value.replace(/\D/g, '').substring(0, 6))}
+                                className="absolute inset-0 w-full h-full opacity-0 text-transparent bg-transparent z-10 cursor-pointer"
+                                required
+                                autoFocus
+                            />
 
-                        <button
-                            disabled={code.length < 6}
-                            type="submit"
-                            className="w-full flex items-center justify-center bg-blue-900 text-white py-4 rounded-xl font-bold shadow-lg hover:bg-blue-800 disabled:opacity-50 disabled:shadow-none transition-all active:scale-95 text-lg"
-                        >
-                            Verificar
-                        </button>
+                            {/* Visual Boxes for OTP */}
+                            <div className="flex justify-between w-full">
+                                {[0, 1, 2, 3, 4, 5].map((index) => {
+                                    const char = code[index];
+                                    const isFocused = code.length === index || (code.length === 6 && index === 5);
+
+                                    return (
+                                        <div
+                                            key={index}
+                                            className={`w-11 h-16 bg-white rounded-xl shadow-sm border-2 flex items-center justify-center text-2xl font-semibold transition-all duration-200
+                                                ${isFocused ? 'border-blue-500 scale-105 shadow-md' : char ? 'border-gray-300' : 'border-gray-100'}
+                                            `}
+                                        >
+                                            {char || ''}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        <div className="mt-8 text-center text-[15px] font-medium text-gray-500 mb-8">
+                            ¿No recibiste el código? <span className="text-blue-500 active:opacity-50 transition-opacity">Reenviar</span>
+                        </div>
+
+                        <div className="mt-auto pb-8 w-full absolute bottom-0 left-0 right-0 px-6 sm:relative">
+                            <button
+                                disabled={code.length < 6}
+                                type="submit"
+                                className="w-full flex items-center justify-center bg-black text-white py-4 rounded-full font-semibold text-[17px] shadow-lg disabled:opacity-30 disabled:shadow-none transition-all active:scale-95"
+                            >
+                                Verificar
+                            </button>
+                        </div>
                     </form>
-
-                    <div className="mt-8 text-center text-sm font-medium text-gray-500">
-                        ¿No recibiste el código? <span className="text-blue-600 cursor-pointer hover:underline">Reenviar SMS</span>
-                    </div>
                 </motion.div>
             </div>
         </div>
